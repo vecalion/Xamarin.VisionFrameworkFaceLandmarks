@@ -84,13 +84,16 @@ namespace Vision.FaceLandmarksDemo
                 _captureSession.AddInput(input);
 
                 // Configure Output
-                var videoOutput = new AVCaptureVideoDataOutput();
                 var settings = new AVVideoSettingsUncompressed()
                 {
                     PixelFormatType = CoreVideo.CVPixelFormatType.CV32BGRA
                 };
-                videoOutput.WeakVideoSettings = settings.Dictionary;
-                videoOutput.AlwaysDiscardsLateVideoFrames = true;
+
+                var videoOutput = new AVCaptureVideoDataOutput
+                {
+                    WeakVideoSettings = settings.Dictionary,
+                    AlwaysDiscardsLateVideoFrames = true
+                };
 
                 var videoCaptureQueue = new DispatchQueue("Video Queue");
                 videoOutput.SetSampleBufferDelegateQueue(new OutputRecorder(View, _shapeLayer), videoCaptureQueue);
