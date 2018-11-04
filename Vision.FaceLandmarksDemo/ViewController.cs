@@ -130,7 +130,7 @@ namespace Vision.FaceLandmarksDemo
             using (var ciImage = new CIImage(pixelBuffer))
             using (var imageWithOrientation = ciImage.CreateByApplyingOrientation(ImageIO.CGImagePropertyOrientation.LeftMirrored))
             {
-                DetectFaces(imageWithOrientation);
+                DetectFaceLandmarks(imageWithOrientation);
             }
 
             sampleBuffer.Dispose();
@@ -139,7 +139,7 @@ namespace Vision.FaceLandmarksDemo
         VNSequenceRequestHandler _sequenceRequestHandler = new VNSequenceRequestHandler();
         VNDetectFaceLandmarksRequest _detectFaceLandmarksRequest;
 
-        void DetectFaces(CIImage imageWithOrientation)
+        void DetectFaceLandmarks(CIImage imageWithOrientation)
         {
             if (_detectFaceLandmarksRequest == null)
             {
@@ -147,39 +147,39 @@ namespace Vision.FaceLandmarksDemo
                 {
                     RemoveSublayers(_shapeLayer);
 
-                    if (error == null)
-                    {
-                        var results = request.GetResults<VNFaceObservation>();
-
-                        foreach (var result in results)
-                        {
-                            if (result.Landmarks != null)
-                            {
-                                var boundingBox = result.BoundingBox;
-                                var scaledBoundingBox = Scale(boundingBox, _view.Bounds.Size);
-
-                                InvokeOnMainThread(() =>
-                                {
-                                    DrawLandmark(result.Landmarks.FaceContour, scaledBoundingBox, false, UIColor.White);
-
-                                    DrawLandmark(result.Landmarks.LeftEye, scaledBoundingBox, true, UIColor.Green);
-                                    DrawLandmark(result.Landmarks.RightEye, scaledBoundingBox, true, UIColor.Green);
-
-                                    DrawLandmark(result.Landmarks.Nose, scaledBoundingBox, true, UIColor.Blue);
-                                    DrawLandmark(result.Landmarks.NoseCrest, scaledBoundingBox, false, UIColor.Blue);
-
-                                    DrawLandmark(result.Landmarks.InnerLips, scaledBoundingBox, true, UIColor.Yellow);
-                                    DrawLandmark(result.Landmarks.OuterLips, scaledBoundingBox, true, UIColor.Yellow);
-
-                                    DrawLandmark(result.Landmarks.LeftEyebrow, scaledBoundingBox, false, UIColor.Blue);
-                                    DrawLandmark(result.Landmarks.RightEyebrow, scaledBoundingBox, false, UIColor.Blue);
-                                });
-                            }
-                        }
-                    }
-                    else
+                    if (error != null)
                     {
                         throw new Exception(error.LocalizedDescription);
+                    }
+
+                    var results = request.GetResults<VNFaceObservation>();
+
+                    foreach (var result in results)
+                    {
+                        if (result.Landmarks == null)
+                        {
+                            continue;
+                        }
+
+                        var boundingBox = result.BoundingBox;
+                        var scaledBoundingBox = Scale(boundingBox, _view.Bounds.Size);
+
+                        InvokeOnMainThread(() =>
+                        {
+                            DrawLandmark(result.Landmarks.FaceContour, scaledBoundingBox, false, UIColor.White);
+
+                            DrawLandmark(result.Landmarks.LeftEye, scaledBoundingBox, true, UIColor.Green);
+                            DrawLandmark(result.Landmarks.RightEye, scaledBoundingBox, true, UIColor.Green);
+
+                            DrawLandmark(result.Landmarks.Nose, scaledBoundingBox, true, UIColor.Blue);
+                            DrawLandmark(result.Landmarks.NoseCrest, scaledBoundingBox, false, UIColor.Blue);
+
+                            DrawLandmark(result.Landmarks.InnerLips, scaledBoundingBox, true, UIColor.Yellow);
+                            DrawLandmark(result.Landmarks.OuterLips, scaledBoundingBox, true, UIColor.Yellow);
+
+                            DrawLandmark(result.Landmarks.LeftEyebrow, scaledBoundingBox, false, UIColor.Blue);
+                            DrawLandmark(result.Landmarks.RightEyebrow, scaledBoundingBox, false, UIColor.Blue);
+                        });
                     }
                 });
             }
@@ -218,7 +218,6 @@ namespace Vision.FaceLandmarksDemo
                 newLayer.StrokeColor = color.CGColor;
                 newLayer.LineWidth = 2;
                 newLayer.FillColor = UIColor.Clear.CGColor;
-
 
                 using (UIBezierPath path = new UIBezierPath())
                 {
