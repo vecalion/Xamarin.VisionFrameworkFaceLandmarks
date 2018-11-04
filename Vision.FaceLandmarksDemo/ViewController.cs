@@ -153,23 +153,23 @@ namespace Vision.FaceLandmarksDemo
                             if (result.Landmarks != null)
                             {
                                 var boundingBox = result.BoundingBox;
-                                var scaledBouncingBox = Scale(boundingBox, _view.Bounds.Size);
+                                var scaledBoundingBox = Scale(boundingBox, _view.Bounds.Size);
 
                                 InvokeOnMainThread(() =>
                                 {
-                                    DrawLandmark(result.Landmarks.FaceContour, scaledBouncingBox, false, UIColor.White);
+                                    DrawLandmark(result.Landmarks.FaceContour, scaledBoundingBox, false, UIColor.White);
 
-                                    DrawLandmark(result.Landmarks.LeftEye, scaledBouncingBox, true, UIColor.Green);
-                                    DrawLandmark(result.Landmarks.RightEye, scaledBouncingBox, true, UIColor.Green);
+                                    DrawLandmark(result.Landmarks.LeftEye, scaledBoundingBox, true, UIColor.Green);
+                                    DrawLandmark(result.Landmarks.RightEye, scaledBoundingBox, true, UIColor.Green);
 
-                                    DrawLandmark(result.Landmarks.Nose, scaledBouncingBox, true, UIColor.Blue);
-                                    DrawLandmark(result.Landmarks.NoseCrest, scaledBouncingBox, false, UIColor.Blue);
+                                    DrawLandmark(result.Landmarks.Nose, scaledBoundingBox, true, UIColor.Blue);
+                                    DrawLandmark(result.Landmarks.NoseCrest, scaledBoundingBox, false, UIColor.Blue);
 
-                                    DrawLandmark(result.Landmarks.InnerLips, scaledBouncingBox, true, UIColor.Yellow);
-                                    DrawLandmark(result.Landmarks.OuterLips, scaledBouncingBox, true, UIColor.Yellow);
+                                    DrawLandmark(result.Landmarks.InnerLips, scaledBoundingBox, true, UIColor.Yellow);
+                                    DrawLandmark(result.Landmarks.OuterLips, scaledBoundingBox, true, UIColor.Yellow);
 
-                                    DrawLandmark(result.Landmarks.LeftEyebrow, scaledBouncingBox, false, UIColor.Blue);
-                                    DrawLandmark(result.Landmarks.RightEyebrow, scaledBouncingBox, false, UIColor.Blue);
+                                    DrawLandmark(result.Landmarks.LeftEyebrow, scaledBoundingBox, false, UIColor.Blue);
+                                    DrawLandmark(result.Landmarks.RightEyebrow, scaledBoundingBox, false, UIColor.Blue);
                                 });
                             }
                         }
@@ -200,14 +200,14 @@ namespace Vision.FaceLandmarksDemo
             }
         }
 
-        void DrawLandmark(VNFaceLandmarkRegion2D feature, CGRect scaledBouncingBox, bool closed, UIColor color)
+        void DrawLandmark(VNFaceLandmarkRegion2D feature, CGRect scaledBoundingBox, bool closed, UIColor color)
         {
             if (feature == null)
             {
                 return;
             }
 
-            var mappedPoints = feature.NormalizedPoints.Select(o => new CGPoint(x: o.X * scaledBouncingBox.Width + scaledBouncingBox.X, y: o.Y * scaledBouncingBox.Height + scaledBouncingBox.Y));
+            var mappedPoints = feature.NormalizedPoints.Select(o => new CGPoint(x: o.X * scaledBoundingBox.Width + scaledBoundingBox.X, y: o.Y * scaledBoundingBox.Height + scaledBoundingBox.Y));
 
             using (var newLayer = new CAShapeLayer())
             {
